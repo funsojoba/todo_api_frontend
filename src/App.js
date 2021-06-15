@@ -102,6 +102,9 @@ class App extends Component {
 
   handleSubmit = (e)=>{
     e.preventDefault()
+    if(this.state.activeItem.title === ""){
+      alert("Please fill in a title for your task")
+    }
     const csrftoken = this.getCookie('csrftoken');
     let baseUrl
 
@@ -165,7 +168,6 @@ class App extends Component {
   }
 
   startEdit = (task)=>{
-    console.log(task)
     this.setState({
       activeItem:task,
       editing:true
