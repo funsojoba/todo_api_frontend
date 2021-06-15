@@ -102,27 +102,52 @@ class App extends Component {
 
   handleSubmit = (e)=>{
     e.preventDefault()
-    let baseUrl = 'http://127.0.0.1:8000/api/v1/'
     const csrftoken = this.getCookie('csrftoken');
+    let baseUrl
 
-    fetch(baseUrl, {
-      method:'POST',
-      headers:{
-        'Content-type':'application/json',
-        'X-CSRFToken':csrftoken
-      },
-      body:JSON.stringify(this.state.activeItem)
-    }).then(response =>{
-      this.fetchTask()
-      this.setState({
-        activeItem:{
-         id:null,
-         title:'',
-         description:'',
-         completed:false
-       },
-      })
-    }).catch(e => console.log('ERROR:', e))
+      if(this.state.editing === false){
+        baseUrl = 'http://127.0.0.1:8000/api/v1/'
+        fetch(baseUrl, {
+          method: 'POST',
+          headers:{
+          'Content-type':'application/json',
+          'X-CSRFToken':csrftoken
+        },
+        body:JSON.stringify(this.state.activeItem)
+        }).then(response =>{
+          this.fetchTask()
+          this.setState({
+          activeItem:{
+            id:null,
+            title:'',
+            description:'',
+            completed:false
+          },
+          })
+        }).catch(e => console.log('ERROR', e))
+      }else{
+        const requestID = this.state.activeItem.id
+        baseUrl = `http://127.0.0.1:8000/api/v1/${requestID}/`
+
+        fetch(baseUrl, {
+          method:'PUT',
+          headers:{
+            'Content-type':'application/json',
+            'X-CSRFToken':csrftoken
+          },
+          body:JSON.stringify(this.state.activeItem)
+        }).then(response =>{
+          this.fetchTask()
+          this.setState({
+          activeItem:{
+            id:null,
+            title:'',
+            description:'',
+            completed:false
+          },
+          })
+        }).catch(e => console.log('ERROR: ',e))
+      }
   }
   
   handleDelete = (item)=>{
@@ -140,9 +165,11 @@ class App extends Component {
   }
 
   startEdit = (task)=>{
+    console.log(task)
     this.setState({
       activeItem:task,
       editing:true
+      
     })
   }
 
